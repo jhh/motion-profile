@@ -30,7 +30,6 @@ class MotionController(private val drive: SwerveDrive, direction: Double, val di
     private var action =
         Action(
             name = "Skippy Motion Profile",
-            measures = listOf("profile_ticks", "actual_ticks", "actual_distance"),
             traceMeasures = listOf(
                 // "millis", are added as first data element but are not a measure
                 "profile_acc",
@@ -58,16 +57,14 @@ class MotionController(private val drive: SwerveDrive, direction: Double, val di
         action.meta["dt"] = DT_MS
         action.meta["t1"] = T1_MS
         action.meta["t2"] = T2_MS
-        action.meta["vProg"] = V_PROG.toInt()
+        action.meta["v_prog"] = V_PROG.toInt()
         action.meta["direction"] = direction
         action.meta["azimuth"] = azimuth
         action.meta["tags"] = listOf("skippy")
         action.meta["type"] = "motion_profile"
         action.meta["k_p"] = K_P
         action.meta["good_enough"] = GOOD_ENOUGH
-
-        action.data.add(distance.toDouble()) // profile_ticks
-        Session.baseUrl = "https://keeper.strykeforce.org"
+        action.meta["profile_ticks"] = distance
     }
 
     val isFinished
@@ -86,8 +83,7 @@ class MotionController(private val drive: SwerveDrive, direction: Double, val di
     fun start() {
         notifier.startPeriodic(DT_MS / 1000.0)
         logger.info("START motion, gyro angle = {}", drive.gyro.angle)
-        action.meta["gyroStart"] = drive.gyro.angle.toString()
-
+        action.meta["gyro_start"] = drive.gyro.angle
         for (i in 0..3) start[i] = drive.wheels[i].driveTalon.getSelectedSensorPosition(0)
     }
 
@@ -95,10 +91,8 @@ class MotionController(private val drive: SwerveDrive, direction: Double, val di
         notifier.stop()
         drive.drive(0.0, 0.0, 0.0)
         logger.info("FINISH motion position = {}", motionProfile.currPos)
-        action.meta["gyroEnd"] = drive.gyro.angle
-        action.data.add(actualDistance) // actual_ticks
-        action.data.add(0.0) // actual_distance, measured physically
-
+        action.meta["gyro_end"] = drive.gyro.angle
+        action.meta["actual_ticks"] = actualDistance
         action.post()
     }
 

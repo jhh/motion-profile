@@ -107,14 +107,14 @@ public class DriveSubsystem extends Subsystem {
     TalonSRXConfiguration driveConfig = new TalonSRXConfiguration();
     driveConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.CTRE_MagEncoder_Relative;
     driveConfig.continuousCurrentLimit = 40;
-    driveConfig.peakCurrentDuration = 0;
-    driveConfig.peakCurrentLimit = 0;
+    driveConfig.peakCurrentDuration = 40;
+    driveConfig.peakCurrentLimit = 1;
     driveConfig.slot0.kP = 0.03;
     driveConfig.slot0.kI = 0.0003;
     driveConfig.slot0.kD = 0.0;
     driveConfig.slot0.kF = 0.028;
     driveConfig.slot0.integralZone = 3000;
-    driveConfig.slot0.allowableClosedloopError = 3392;
+    driveConfig.slot0.allowableClosedloopError = 0;
 
     TelemetryService telemetryService = Robot.TELEMETRY;
     telemetryService.stop();
